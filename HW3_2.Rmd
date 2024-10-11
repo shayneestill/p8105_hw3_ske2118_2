@@ -1,0 +1,20 @@
+---
+title: "HW3"
+author: "Shayne Estill (ske2118)"
+output: github_document
+---
+
+```{r setup, include = FALSE}
+library(tidyverse)
+```
+
+```{r, include = FALSE}
+library(p8105.datasets)
+data("ny_noaa")
+```
+
+
+
+
+
+
