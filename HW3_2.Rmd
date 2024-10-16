@@ -159,10 +159,23 @@ janitor::clean_names() |>
     filter(age > 20) |>
     drop_na() |>
     mutate(
-      seqn = factor(seqn),
-      sex = factor(sex),
-      education = factor(education)
+      seqn = factor(seqn)) |> 
+    mutate(
+    education = case_match(
+      education,
+      1 ~ "Less than high school",
+      2 ~ "High school equivalent",
+      3 ~ "More than high school"),
+    education = as.factor(education)
+    ) |>
+mutate(
+    sex = case_match(
+      sex,
+      1 ~ "male",
+      2 ~ "female"),
+    sex = as.factor(sex)
     )
+
 
 ```
 
@@ -170,27 +183,21 @@ janitor::clean_names() |>
 accel_df = read_csv(file = "./HW3_2_files/nhanes_accel.csv") |>
   janitor::clean_names() |>
   drop_na() |>
-  mutate(
-    seqn = factor(seqn)
-  )
-
-```
-
-```{r}
-accel_tidy_df = 
-  pivot_longer(
-    accel_df,
+pivot_longer(
     min1:min1440,
     names_to = "obs",
     values_to = "min"
-  )
-  
+  ) |>
+mutate(
+    seqn = factor(seqn)) 
+```
+
+```{r}
 merged_df = 
   left_join(
-    accel_tidy_df,
+    accel_df,
     demographic_df,
-    by = NULL,
-    copy = FALSE
+    by = join_by(seqn)
   )
 ```
 
@@ -198,23 +205,41 @@ merged_df =
 Produce a reader-friendly table for the number of men and women in each education category, and create a visualization of the age distributions for men and women in each education category. Comment on these items.
 
 ```{r}
-counts_df <-
-merged_df |>
+  merged_df |>
   group_by(education, sex) |>
-  count()
-
-pivot_wider(
-  counts_df, 
-  names_from = "sex", 
-  values_from = n)
-
-knitr::kable(counts_df)
+  summarize(count = n_distinct(seqn)) |> 
+   pivot_wider(
+     names_from = sex,
+     values_from = count) |>
+  knitr::kable()
 ```
 
+
+It appears that there are more females than males that have more than high school education and less than high school education while, there are more males who have high school equivalent education than females. 
+
+
+Create a visualization of the age distributions for men and women in each education category
+```{r}
+age_dist = 
+  merged_df |>
+  select(age, education, sex) |>
+  group_by(education,sex) |>
+  ggplot(aes(x = age, y = education, fill = sex)) + 
+  geom_density_ridges(scale = 0.5, alpha = 0.5)
+
+age_dist
+```
+
+This matches our previous graph. There is more density around age 30 for education more than high school.
 
 Traditional analyses of accelerometer data focus on the total activity over the day. Using your tidied dataset, aggregate across minutes to create a total activity variable for each participant. Plot these total activities (y-axis) against age (x-axis); your plot should compare men to women and have separate panels for each education level. Include a trend line or a smooth to illustrate differences. Comment on your plot.
 
 ```{r}
+merged_df <-
+  merged_df |>
+  group_by(seqn) |>
+  summarize(total_activity = sum(min, na.rm = FALSE))
+
 
 ```
 
