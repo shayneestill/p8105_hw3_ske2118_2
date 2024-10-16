@@ -108,12 +108,26 @@ From the histogram and output, the most commonly observed snowfall values are ze
 
 Make a two-panel plot showing the average max temperature in January and in July in each station across years. Is there any observable / interpretable structure? Any outliers?
 
+The min year is `r min(ny_noaa_cleaned$year, na.rm = TRUE)`.
+The max year is `r max(ny_noaa_cleaned$year, na.rm = TRUE)`.
+
+
 ```{r}
-avg_temp <- ny_noaa_cleaned |>
+avg_maxtemp <- ny_noaa_cleaned |>
   filter(month == 1| month == 7 ) |>
-  group_by(id, month) |>
+  group_by(id, month, year) |>
   summarize(avg_max_temp = mean(tmax, na.rm = TRUE))
+
+avg_maxtemp |>
+  ggplot(aes(x = year, y = avg_max_temp)) + 
+  geom_point(aes(color = month)) + 
+  geom_smooth(se = FALSE) +
+  facet_grid(. ~ month)
 ```
+
+The average max temperature in January is much lower than the average max
+temperature in July across all years. There does not appear to be too much of an outlier. 
+
 
 Make a two-panel plot showing (i) tmax vs tmin for the full dataset (note that a scatterplot may not be the best option); and (ii) make a plot showing the distribution of snowfall values greater than 0 and less than 100 separately by year.
 
