@@ -13,12 +13,106 @@ library(p8105.datasets)
 data("ny_noaa")
 ```
 
-The ny_noaa dataset has 2,595176 rows and 7 columns. The variables include id(chr), date(date), prcp(int), snow(int), snwd(int), tmax(chr), and tmin(chr). There is a significant amount of missing data in all columns. 
+The "ny_noaa" dataset has `r nrow(ny_noaa)` rows and `r ncol(ny_noaa)` columns. From the NY NOAA information page, The resulting R dataset ny_noaa contains variables:
 
-Do some data cleaning. Create separate variables for year, month, and day. Ensure observations for temperature, precipitation, and snowfall are given in reasonable units. For snowfall, what are the most commonly observed values? Why?
+id: Weather station ID
+date: Date of observation
+prcp: Precipitation (tenths of mm)
+snow: Snowfall (mm)
+snwd: Snow depth (mm)
+tmax: Maximum temperature (tenths of degrees C)
+tmin: Minimum temperature (tenths of degrees C)
+
+The variable types include id(chr), date(date), prcp(int), snow(int), snwd(int), tmax(chr), and tmin(chr). 
+
+There is a significant amount of missing data. There are 
+`r sum(is.na(ny_noaa$prcp))` missing precipitation values, 
+`r sum(is.na(ny_noaa$snow))` missing snow values, 
+`r sum(is.na(ny_noaa$snwd))` missing snow depth values, 
+`r sum(is.na(ny_noaa$tmax))` missing max temperature values, 
+`r sum(is.na(ny_noaa$tmin))` missing min temperature values, 
+`r sum(is.na(ny_noaa$date))` missing date values,
+`r sum(is.na(ny_noaa$id))` missing ID values 
 
 
 
+#Do some data cleaning. Create separate variables for year, month, and day. 
+
+```{r, include = FALSE}
+ny_noaa_cleaned <- ny_noaa |>
+    janitor::clean_names() |>
+    mutate(
+    year = lubridate::year(date),
+    month = lubridate::month(date),
+    day = lubridate::day(date)) |>
+    mutate(
+      year = as.character(year),
+      month = as.character(month),
+      day = as.character(day)
+    )
+```
+
+I also changed the new variables for year, month, and day to character. 
 
 
+###Ensure observations for temperature, precipitation, and snowfall are given in reasonable units. 
+
+The max tmax value is `r max(ny_noaa$tmax, na.rm = TRUE)` . 
+The min tmin value is `r min(ny_noaa$tmin, na.rm = TRUE)`.
+This seems unreasonable for Celsius measures. 
+
+The max precipitation value is `r max(ny_noaa$prcp, na.rm = TRUE)`.
+This seems unreasonable for tenths of a mm. 
+
+The max snowfall value is `r max(ny_noaa$snow, na.rm = TRUE)`.
+These values don't make sense. We should convert these variables from
+character and int to double. 
+
+```{r}
+ny_noaa_cleaned <-ny_noaa_cleaned |>
+  mutate(
+    tmax = as.double(tmax, digits = 2),
+    tmin = as.double(tmin, digits = 2),
+    snow = as.double(snow, digits = 2),
+    snwd = as.double(snow, digits = 2)
+  )
+```
+
+```{r}
+ny_noaa_cleaned <- ny_noaa_cleaned |>
+  mutate(
+    tmax = tmax / 10,
+    tmin = tmin / 10
+  )
+```
+
+The max precipitation value is `r max(ny_noaa_cleaned$prcp, na.rm = TRUE)`
+The max tmax value is `r max(ny_noaa_cleaned$tmax, na.rm = TRUE)`
+The min tmin value is `r min(ny_noaa_cleaned$tmin, na.rm = TRUE)`
+
+For snowfall, what are the most commonly observed values? Why?
+
+```{r}
+ny_noaa_cleaned |>
+  ggplot(aes(x = snow)) + 
+  geom_histogram() 
+```
+
+The most commonly observed snowfall values are zero. This is because the majority of the year, there is no snowfall in New York. 
+
+
+Make a two-panel plot showing the average max temperature in January and in July in each station across years. Is there any observable / interpretable structure? Any outliers?
+
+```{r}
+avg_temp <- ny_noaa_cleaned |>
+  filter(month == 1| month == 7 ) |>
+  group_by(id, month) |>
+  summarize(avg_max_temp = mean(tmax, na.rm = TRUE))
+```
+
+Make a two-panel plot showing (i) tmax vs tmin for the full dataset (note that a scatterplot may not be the best option); and (ii) make a plot showing the distribution of snowfall values greater than 0 and less than 100 separately by year.
+
+```{r}
+
+```
 
