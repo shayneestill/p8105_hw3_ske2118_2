@@ -96,9 +96,14 @@ For snowfall, what are the most commonly observed values? Why?
 ny_noaa_cleaned |>
   ggplot(aes(x = snow)) + 
   geom_histogram() 
+
+ny_noaa_cleaned |> 
+  group_by(snow) |> 
+  summarize(count = n()) |> 
+  arrange(desc(count))
 ```
 
-The most commonly observed snowfall values are zero. This is because the majority of the year, there is no snowfall in New York. 
+From the histogram and output, the most commonly observed snowfall values are zero, NA, 25 and 13. This is because the majority of the year, there is no snowfall in New York. 
 
 
 Make a two-panel plot showing the average max temperature in January and in July in each station across years. Is there any observable / interpretable structure? Any outliers?
