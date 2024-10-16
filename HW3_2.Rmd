@@ -129,7 +129,14 @@ The average max temperature in January is much lower than the average max
 temperature in July across all years. There does not appear to be too much of an outlier. 
 
 
-Make a two-panel plot showing (i) tmax vs tmin for the full dataset (note that a scatterplot may not be the best option); and (ii) make a plot showing the distribution of snowfall values greater than 0 and less than 100 separately by year.
+Make a two-panel plot showing (i) tmax vs tmin for the full dataset (note that a scatterplot may not be the best option)
+
+```{r}
+ggplot(ny_noaa_cleaned, aes(x = tmin, y = tmax)) + 
+  geom_hex()
+```
+
+Make a plot showing the distribution of snowfall values greater than 0 and less than 100 separately by year.
 
 ```{r}
 
