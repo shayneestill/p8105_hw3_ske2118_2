@@ -198,11 +198,17 @@ merged_df =
 Produce a reader-friendly table for the number of men and women in each education category, and create a visualization of the age distributions for men and women in each education category. Comment on these items.
 
 ```{r}
+counts_df <-
 merged_df |>
   group_by(education, sex) |>
-  summarize(count = n_distinct(seqn))
+  count()
 
-head(merged_df)
+pivot_wider(
+  counts_df, 
+  names_from = "sex", 
+  values_from = n)
+
+knitr::kable(counts_df)
 ```
 
 
