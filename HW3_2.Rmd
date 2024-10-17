@@ -238,22 +238,40 @@ Traditional analyses of accelerometer data focus on the total activity over the 
 merged_df_totalact <-
   merged_df |>
   drop_na(education, age, bmi, sex, seqn) |>
-  group_by(seqn) |>
-  mutate(total_activity = sum(min, na.rm = TRUE)) |>
+  group_by(seqn, sex, education, age) |>
+  summarize(total_activity = sum(min, na.rm = TRUE)) |>
   ungroup()
 ```
 
 ```{r}
 ggplot(merged_df_totalact, 
        aes(x = age, y = total_activity, color = sex)) +
-  geom_smooth(se = FALSE) + 
+  geom_point(alpha = .5) +
+  geom_smooth() + 
   facet_grid(. ~ education) 
 ```
 
 Accelerometer data allows the inspection activity over the course of the day. Make a three-panel plot that shows the 24-hour activity time courses for each education level and use color to indicate sex. Describe in words any patterns or conclusions you can make based on this graph; including smooth trends may help identify differences.
 
-```{r}
 
+```{r}
+merged_df_hour <-
+  merged_df |>
+  drop_na(education, age, bmi, sex, seqn) |>
+  group_by(seqn, sex, education, age) |>
+  mutate(hour = min / 60) |>
+  summarize(hour_activity = sum(hour, na.rm = TRUE)) |>
+  ungroup()
+```
+
+```{r}
+merged_df_totalact |>
+  mutate(obs = as.numeric(obs))
+ggplot( 
+       aes(x = "min", y = obs, color = sex, fill = sex)) +
+  geom_point(alpha = .5) +
+  geom_smooth(se = FALSE) + 
+  facet_grid(. ~ education) 
 ```
 
 
