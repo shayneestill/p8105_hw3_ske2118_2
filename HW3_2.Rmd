@@ -350,6 +350,12 @@ July compared to 2024.
 There were relatively few electric Citi Bikes in 2020, but many more are available now. For data in 2024, make a figure that shows the impact of month, membership status, and bike type on the distribution of ride duration. Comment on your results.
 
 ```{r}
+citibike_dist <- citibike_tidy |>
+  filter(year == 2024)
 
+ggplot(citibike_dist, aes(x = month, y = duration, fill = rideable_type)) +
+  geom_boxplot() +
+  facet_grid(month ~ rideable_type) 
 ```
 
+In 
