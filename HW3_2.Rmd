@@ -263,25 +263,29 @@ This zip file contains data on rides taken on the NYC Citi Bike system. Files co
 ```{r}
 citibike_jan20_df = read_csv(file = "./HW3_2_files/citibike/Jan 2020 Citi.csv") |>
   janitor::clean_names() |> 
-  mutate(month = "January", year = "2020")
+  mutate(month = "January", year = "2020") |>
+  mutate(month_year = "January 2020")
 ```
 
 ```{r}
 citibike_july20_df = read_csv(file = "./HW3_2_files/citibike/July 2020 Citi.csv") |>
   janitor::clean_names() |>
-  mutate(month = "July", year = "2020")
+  mutate(month = "July", year = "2020") |>
+  mutate(month_year = "July 2020")
 ```
 
 ```{r}
 citibike_jan24_df = read_csv(file = "./HW3_2_files/citibike/Jan 2024 Citi.csv") |>
   janitor::clean_names() |>
-  mutate(month = "January", year = "2024")
+  mutate(month = "January", year = "2024") |>
+  mutate(month_year = "January 2024")
 ```
 
 ```{r}
 citibike_july24_df = read_csv(file = "./HW3_2_files/citibike/July 2024 Citi.csv") |>
   janitor::clean_names() |>
-  mutate(month = "July", year = "2024")
+  mutate(month = "July", year = "2024") |>
+  mutate(month_year = "July 2024")
 ```
 
 ```{r}
@@ -294,15 +298,42 @@ This dataset has information from January 2020, July 2020, January 2024, and Jul
 There are `r nrow(citibike_tidy)` rows and `r ncol(citibike_tidy)` columns in our combined dataset. 
 
 Variables include ride_id(chr), rideable_type(chr), weekdays(chr), duration(dbl), start_station_name(chr), end_station_name (chr), member_casual (chr),
-month (chr), year (chr)
+month (chr), year (chr), and month_year (chr)
 
 Produce a reader-friendly table showing the total number of rides in each combination of year and month separating casual riders and Citi Bike members. Comment on these results.
 
+```{r}
+citibike_table <- citibike_tidy |>
+  janitor::tabyl(member_casual, month_year)
+```
 
+It appears that overall, the number of people using citi bike has grown from January 2020 to July 2024. Summer months seem to have more frequent rides than winter months and there are more members than casual riders in each month_year. 
 
 Make a table showing the 5 most popular starting stations for July 2024; include the number of rides originating from these stations.
 
+```{r}
+citibike_popular <- citibike_tidy |>
+  filter(month_year == "July 2024") |>
+  group_by(start_station_name, month_year) |>
+  summarize(count = n()) |>
+  arrange(desc(count))
+
+head(citibike_popular, 5)
+```
+
+From our output, Pier 61 at Chelsea Piers had the highest count of number of 
+rides originating from this station in July 2024. 
+
 Make a plot to investigate the effects of day of the week, month, and year on median ride duration. This plot can include one or more panels, but should facilitate comparison across all variables of interest. Comment on your observations from this plot.
 
+```{r}
+
+```
+
+
 There were relatively few electric Citi Bikes in 2020, but many more are available now. For data in 2024, make a figure that shows the impact of month, membership status, and bike type on the distribution of ride duration. Comment on your results.
+
+```{r}
+
+```
 
