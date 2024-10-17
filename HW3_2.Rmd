@@ -238,7 +238,7 @@ Traditional analyses of accelerometer data focus on the total activity over the 
 merged_df_totalact <-
   merged_df |>
   drop_na(education, age, bmi, sex, seqn) |>
-  group_by(seqn, sex, education, age) |>
+  group_by(seqn, sex, education, age, min) |>
   summarize(total_activity = sum(min, na.rm = TRUE)) |>
   ungroup()
 ```
@@ -254,7 +254,17 @@ ggplot(merged_df_totalact,
 Accelerometer data allows the inspection activity over the course of the day. Make a three-panel plot that shows the 24-hour activity time courses for each education level and use color to indicate sex. Describe in words any patterns or conclusions you can make based on this graph; including smooth trends may help identify differences.
 
 
+```{r}
 
+ggplot(merged_df_totalact,
+       aes(x = min, y = total_activity, color = sex, fill = sex)) +
+  geom_point(alpha = .5) +
+  geom_smooth(se = FALSE) + 
+  facet_grid(. ~ education) 
+```
+
+Data appears off and unable to troubleshoot. 
+However we would expect the most amount of activity during day time hours (maybe after 7am), and activity decreasing in the evening (after 9pm). 
 
 ###Problem 3###
 
@@ -353,9 +363,13 @@ There were relatively few electric Citi Bikes in 2020, but many more are availab
 citibike_dist <- citibike_tidy |>
   filter(year == 2024)
 
-ggplot(citibike_dist, aes(x = month, y = duration, fill = rideable_type)) +
+ggplot(citibike_dist, aes(x = member_casual, y = duration, fill = rideable_type)) +
   geom_boxplot() +
   facet_grid(month ~ rideable_type) 
 ```
 
-In 
+Casual members appear to have higher median ride durations than members do 
+across both monthy and rideable_type. January tends to have short ride 
+durations than July does, which makes sense since it is easier and more
+enjoyable to bike in the summer. 
+ride in the summer 
